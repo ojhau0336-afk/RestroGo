@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>RestroGo Login</title>
+</head>
+<body>
+<h1>Welcome to RestroGo</h1>
+<p>Login to your account</p>
+<form id="loginForm">
+  <input type="email" id="email" placeholder="Enter your Email" required>
+  <br><br>
+  <input type="password" id="password" placeholder="Enter your Password" required>
+  <br><br>
+  <button type="submit">Login</button>
+<p id="message"></p>
+</form>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyDF4UlBoVg28daeuaPhwnPjJOy3DUL1uOw",
+  authDomain: "restrogo-4c732.firebaseapp.com",
+  projectId: "restrogo-4c732",
+  storageBucket: "restrogo-4c732.firebasestorage.app",
+  messagingSenderId: "852834347999",
+  appId: "1:852834347999:web:e5de0310ceeb660aa2326a",
+  measurementId: "G-RXHZE3HTDZ"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const message = document.getElementById("message");
+
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    message.textContent = "Login Successful!";
+  } catch (error) {
+    message.textContent = error.message;
+  }
+});
+</script>
+</body>
+
+</html>
