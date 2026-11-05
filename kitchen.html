@@ -7,183 +7,60 @@
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body class="kitchen-page">
-
-<!-- ── HEADER ── -->
 <header class="kitchen-header">
-  <div class="rg-logo">
-    <div class="rg-logo-mark">R</div>
-    <span class="rg-logo-text">Restro<span>Go</span> Kitchen</span>
-  </div>
+  <div class="rg-logo"><div class="rg-logo-mark">R</div><span class="rg-logo-text">Restro<span>Go</span> Kitchen</span></div>
   <div id="kitchenClock" class="kitchen-clock">--:--:--</div>
   <a href="owner.html" class="btn btn-outline btn-sm" style="color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.15);">Owner →</a>
 </header>
-
-<!-- ── NEW ORDER ALERT ── -->
-<div class="new-order-alert hidden" id="newOrderAlert">
-  🔔 New order received! Scroll down to view.
-</div>
-
-<!-- ── TABS ── -->
+<div class="new-order-alert hidden" id="newOrderAlert">🔔 New order received! Scroll down to view.</div>
 <div class="kitchen-tabs" id="kitchenTabs">
-  <button class="k-tab active" data-status="placed"    onclick="switchTab(this)">🆕 New <span class="tab-count" id="cnt-placed">0</span></button>
-  <button class="k-tab"        data-status="preparing" onclick="switchTab(this)">👨‍🍳 Preparing <span class="tab-count" id="cnt-preparing">0</span></button>
-  <button class="k-tab"        data-status="ready"     onclick="switchTab(this)">🔔 Ready <span class="tab-count" id="cnt-ready">0</span></button>
-  <button class="k-tab"        data-status="delivered" onclick="switchTab(this)">✅ Done <span class="tab-count" id="cnt-delivered">0</span></button>
+  <button class="k-tab active" data-status="placed" onclick="switchTab(this)">🆕 New <span class="tab-count" id="cnt-placed">0</span></button>
+  <button class="k-tab" data-status="preparing" onclick="switchTab(this)">👨‍🍳 Preparing <span class="tab-count" id="cnt-preparing">0</span></button>
+  <button class="k-tab" data-status="ready" onclick="switchTab(this)">🔔 Ready <span class="tab-count" id="cnt-ready">0</span></button>
+  <button class="k-tab" data-status="delivered" onclick="switchTab(this)">✅ Done <span class="tab-count" id="cnt-delivered">0</span></button>
 </div>
-
-<!-- ── ORDER GRID ── -->
-<div class="kitchen-grid" id="kitchenGrid"></div>
-
-<!-- ── TOAST ── -->
+<div class="kitchen-grid" id="kitchenGrid">
+  <div class="empty-state" style="grid-column:1/-1;color:rgba(255,255,255,.4)">
+    <div class="es-icon">⏳</div>
+    <h3 style="color:rgba(255,255,255,.6)">Connecting…</h3>
+    <p>Loading orders from server</p>
+  </div>
+</div>
 <div class="toast-container" id="toastContainer"></div>
-
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="data.js"></script>
 <script>
-RG.seed();
-RG.initChannel();
-
-let activeTab    = 'placed';
-let knownOrders  = new Set();
-
-// ── Clock ──
-function updateClock() {
-  document.getElementById('kitchenClock').textContent =
-    new Date().toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+let activeTab='placed',allOrders=[],knownOrders=new Set();
+function updateClock(){document.getElementById('kitchenClock').textContent=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+setInterval(updateClock,1000);updateClock();
+function switchTab(el){document.querySelectorAll('.k-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');activeTab=el.dataset.status;renderOrders();}
+function renderOrders(){
+  const orders=allOrders.filter(o=>o.status===activeTab);
+  const grid=document.getElementById('kitchenGrid');
+  ['placed','preparing','ready','delivered'].forEach(s=>{document.getElementById('cnt-'+s).textContent=allOrders.filter(o=>o.status===s).length;});
+  if(!orders.length){grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1;color:rgba(255,255,255,.4)"><div class="es-icon">📭</div><h3 style="color:rgba(255,255,255,.6)">No orders here</h3><p>Waiting for new orders…</p></div>`;return;}
+  grid.innerHTML=orders.map(order=>{const isNew=order.status==='placed';const instHtml=order.instructions?`<div class="order-instructions">📝 ${order.instructions}</div>`:'';return`<div class="order-card ${isNew?'new-order':''}" id="oc-${order.id}"><div class="order-card-header"><div><div class="order-id">${order.id}</div><div class="order-meta">Table ${order.table} · ${order.customer}</div></div><div class="order-time"><div>${RG.fmt.time(order.createdAt)}</div><div style="margin-top:3px">${RG.fmt.ago(order.createdAt)}</div></div></div><div class="order-items-list">${order.items.map(i=>`<div class="order-item-row"><span><span class="order-item-qty">${i.qty}×</span>${i.name}</span><span>${RG.fmt.price(i.price*i.qty)}</span></div>`).join('')}</div>${instHtml}<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:12px;padding-top:8px;border-top:1px solid rgba(255,255,255,.07)"><span style="color:rgba(255,255,255,.5)">Total</span><span style="font-weight:800;color:var(--orange)">${RG.fmt.price(order.total)}</span></div><div class="order-card-actions">${getActionBtns(order)}</div></div>`;}).join('');
 }
-setInterval(updateClock, 1000);
-updateClock();
-
-// ── Tab ──
-function switchTab(el) {
-  document.querySelectorAll('.k-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  activeTab = el.dataset.status;
-  renderOrders();
-}
-
-// ── Render ──
-function renderOrders() {
-  const orders = RG.getOrders().filter(o => o.status === activeTab);
-  const grid   = document.getElementById('kitchenGrid');
-
-  // Update counts
-  ['placed','preparing','ready','delivered'].forEach(s => {
-    const cnt = RG.getOrders().filter(o => o.status === s).length;
-    document.getElementById('cnt-' + s).textContent = cnt;
+function getActionBtns(order){switch(order.status){case'placed':return`<button class="k-action-btn k-btn-blue" onclick="moveOrder('${order.id}','preparing')">👨‍🍳 Start Preparing</button><button class="k-action-btn k-btn-gray" onclick="cancelOrder('${order.id}')" style="background:rgba(239,68,68,.2);color:#f87171;">✕ Cancel</button>`;case'preparing':return`<button class="k-action-btn k-btn-green" onclick="moveOrder('${order.id}','ready')">🔔 Mark Ready</button>`;case'ready':return`<button class="k-action-btn k-btn-gray" onclick="moveOrder('${order.id}','delivered')" style="background:var(--green);color:#fff;">✅ Delivered</button>`;case'delivered':return`<button class="k-action-btn k-btn-gray" disabled>✅ Completed</button>`;default:return'';}}
+async function moveOrder(id,status){await RG.updateOrderStatus(id,status);toast(`Order ${id} → ${RG.STATUS_LABELS[status]}`,'success');}
+async function cancelOrder(id){if(!confirm('Cancel this order?'))return;await RG.updateOrderStatus(id,'cancelled');toast('Order cancelled.','error');}
+function toast(msg,type=''){const el=document.createElement('div');el.className=`toast ${type}`;el.textContent=msg;document.getElementById('toastContainer').appendChild(el);setTimeout(()=>el.remove(),3500);}
+RG.seed().then(()=>{
+  RG.onOrders(orders=>{
+    const newOnes=orders.filter(o=>o.status==='placed'&&!knownOrders.has(o.id));
+    if(newOnes.length&&allOrders.length>0){
+      newOnes.forEach(o=>knownOrders.add(o.id));
+      const alert=document.getElementById('newOrderAlert');
+      alert.classList.remove('hidden');
+      setTimeout(()=>alert.classList.add('hidden'),4000);
+      if(activeTab!=='placed')toast(`${newOnes.length} new order(s)! 🔔`);
+    }
+    orders.forEach(o=>{if(o.status==='placed')knownOrders.add(o.id);});
+    allOrders=orders;
+    renderOrders();
   });
-
-  if (!orders.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;color:rgba(255,255,255,.4)">
-      <div class="es-icon">📭</div>
-      <h3 style="color:rgba(255,255,255,.6)">No orders here</h3>
-      <p>Waiting for new orders…</p>
-    </div>`;
-    return;
-  }
-
-  grid.innerHTML = orders.map(order => {
-    const isNew = order.status === 'placed';
-    const actionBtns = getActionBtns(order);
-    const instHtml = order.instructions
-      ? `<div class="order-instructions">📝 ${order.instructions}</div>` : '';
-
-    return `
-    <div class="order-card ${isNew ? 'new-order' : ''}" id="oc-${order.id}">
-      <div class="order-card-header">
-        <div>
-          <div class="order-id">${order.id}</div>
-          <div class="order-meta">Table ${order.table} · ${order.customer}</div>
-        </div>
-        <div class="order-time">
-          <div>${RG.fmt.time(order.createdAt)}</div>
-          <div style="margin-top:3px">${RG.fmt.ago(order.createdAt)}</div>
-        </div>
-      </div>
-      <div class="order-items-list">
-        ${order.items.map(i => `
-          <div class="order-item-row">
-            <span><span class="order-item-qty">${i.qty}×</span>${i.name}</span>
-            <span>${RG.fmt.price(i.price * i.qty)}</span>
-          </div>`).join('')}
-      </div>
-      ${instHtml}
-      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:12px;padding-top:8px;border-top:1px solid rgba(255,255,255,.07)">
-        <span style="color:rgba(255,255,255,.5)">Total</span>
-        <span style="font-weight:800;color:var(--orange)">${RG.fmt.price(order.total)}</span>
-      </div>
-      <div class="order-card-actions">${actionBtns}</div>
-    </div>`;
-  }).join('');
-}
-
-function getActionBtns(order) {
-  switch(order.status) {
-    case 'placed':
-      return `<button class="k-action-btn k-btn-blue"  onclick="moveOrder('${order.id}','preparing')">👨‍🍳 Start Preparing</button>
-              <button class="k-action-btn k-btn-gray"   onclick="cancelOrder('${order.id}')" style="background:rgba(239,68,68,.2);color:#f87171;">✕ Cancel</button>`;
-    case 'preparing':
-      return `<button class="k-action-btn k-btn-green" onclick="moveOrder('${order.id}','ready')">🔔 Mark Ready</button>`;
-    case 'ready':
-      return `<button class="k-action-btn k-btn-gray"  onclick="moveOrder('${order.id}','delivered')" style="background:var(--green);color:#fff;">✅ Delivered</button>`;
-    case 'delivered':
-      return `<button class="k-action-btn k-btn-gray" disabled>✅ Completed</button>`;
-    default:
-      return '';
-  }
-}
-
-function moveOrder(id, status) {
-  RG.updateOrderStatus(id, status);
-  renderOrders();
-  toast(`Order ${id} → ${RG.STATUS_LABELS[status]}`, 'success');
-}
-
-function cancelOrder(id) {
-  if (!confirm('Cancel this order?')) return;
-  RG.updateOrderStatus(id, 'cancelled');
-  renderOrders();
-  toast('Order cancelled.', 'error');
-}
-
-// ── Auto-refresh & alert ──
-function checkNewOrders() {
-  const all = RG.getOrders();
-  const newOnes = all.filter(o => o.status === 'placed' && !knownOrders.has(o.id));
-  if (newOnes.length) {
-    newOnes.forEach(o => knownOrders.add(o.id));
-    const alert = document.getElementById('newOrderAlert');
-    alert.classList.remove('hidden');
-    setTimeout(() => alert.classList.add('hidden'), 4000);
-    if (activeTab === 'placed') renderOrders();
-    else toast(`${newOnes.length} new order(s) received! 🔔`);
-    try { new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAA').play().catch(()=>{}); } catch{}
-  }
-  renderOrders();
-}
-
-// Cross-tab
-if (RG.ch) {
-  RG.ch.onmessage = e => {
-    if (e.data.type === 'ORDERS_UPDATED') checkNewOrders();
-    if (e.data.type === 'RESET') { knownOrders.clear(); renderOrders(); }
-  };
-}
-window.addEventListener('storage', e => {
-  if (e.key === RG.KEYS.ORDERS) checkNewOrders();
 });
-
-function toast(msg, type='') {
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.textContent = msg;
-  document.getElementById('toastContainer').appendChild(el);
-  setTimeout(() => el.remove(), 3500);
-}
-
-// Init
-RG.getOrders().forEach(o => knownOrders.add(o.id));
-renderOrders();
-setInterval(renderOrders, 10000);
 </script>
 </body>
 </html>
