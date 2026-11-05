@@ -5,29 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>RestroGo — Owner Dashboard</title>
   <link rel="stylesheet" href="style.css"/>
-  <!-- QR: use qrcode-generator for canvas-level control + logo overlay -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
-          onerror="window.QRCode=null"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"
-          onerror="window._qrgen=null"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 </head>
 <body class="owner-page">
-
-<!-- ── MOBILE SIDEBAR BUTTON ── -->
 <button class="sidebar-mob-btn" id="mobSideBtn" onclick="toggleSidebar()">☰</button>
-
-<!-- ── SIDEBAR ── -->
 <aside class="owner-sidebar" id="ownerSidebar">
-  <div class="sidebar-logo">
-    <div class="rg-logo-mark">R</div>
-    <span class="rg-logo-text">Restro<span>Go</span></span>
-  </div>
+  <div class="sidebar-logo"><div class="rg-logo-mark">R</div><span class="rg-logo-text">Restro<span>Go</span></span></div>
   <nav class="sidebar-nav">
     <div class="nav-item active" data-section="dashboard" onclick="showSection(this)"><span class="nav-icon">📊</span>Dashboard</div>
-    <div class="nav-item"        data-section="orders"    onclick="showSection(this)"><span class="nav-icon">📋</span>Orders</div>
-    <div class="nav-item"        data-section="menu"      onclick="showSection(this)"><span class="nav-icon">🍽️</span>Menu Management</div>
-    <div class="nav-item"        data-section="tables"    onclick="showSection(this)"><span class="nav-icon">🪑</span>Tables & QR</div>
-    <div class="nav-item"        data-section="reports"   onclick="showSection(this)"><span class="nav-icon">📈</span>Reports</div>
+    <div class="nav-item" data-section="orders" onclick="showSection(this)"><span class="nav-icon">📋</span>Orders</div>
+    <div class="nav-item" data-section="menu" onclick="showSection(this)"><span class="nav-icon">🍽️</span>Menu Management</div>
+    <div class="nav-item" data-section="tables" onclick="showSection(this)"><span class="nav-icon">🪑</span>Tables & QR</div>
+    <div class="nav-item" data-section="reports" onclick="showSection(this)"><span class="nav-icon">📈</span>Reports</div>
   </nav>
   <div class="sidebar-footer">
     <a href="index.html" class="btn btn-outline btn-sm w100" style="margin-bottom:8px;">🍽 Customer View</a>
@@ -35,707 +24,83 @@
     <button class="btn btn-danger btn-sm w100" onclick="confirmReset()">🔄 Reset Demo</button>
   </div>
 </aside>
-
-<!-- ── MAIN ── -->
 <main class="owner-main">
-
-  <!-- Topbar -->
-  <div class="owner-topbar">
-    <div class="page-title" id="ownerPageTitle">📊 Dashboard</div>
-    <div style="font-size:13px;color:var(--muted)" id="ownerClock">--</div>
-  </div>
-
-  <!-- ══ DASHBOARD ══ -->
+  <div class="owner-topbar"><div class="page-title" id="ownerPageTitle">📊 Dashboard</div><div style="font-size:13px;color:var(--muted)" id="ownerClock">--</div></div>
   <section class="owner-section active" id="sec-dashboard">
-    <div class="stats-grid" id="statsGrid"></div>
-
+    <div class="stats-grid" id="statsGrid"><div class="stat-card"><div class="stat-icon orange">⏳</div><div><div class="stat-val">—</div><div class="stat-label">Loading…</div></div></div></div>
     <h3 style="font-size:16px;font-weight:700;margin-bottom:14px;">Recent Orders</h3>
-    <div style="overflow-x:auto;">
-      <table class="data-table" id="recentOrdersTable">
-        <thead><tr>
-          <th>Order ID</th><th>Table</th><th>Customer</th>
-          <th>Items</th><th>Total</th><th>Status</th><th>Time</th>
-        </tr></thead>
-        <tbody id="recentOrdersTbody"></tbody>
-      </table>
-    </div>
+    <div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>Order ID</th><th>Table</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Time</th></tr></thead><tbody id="recentOrdersTbody"><tr><td colspan="7" class="center muted" style="padding:24px">Loading…</td></tr></tbody></table></div>
   </section>
-
-  <!-- ══ ORDERS ══ -->
   <section class="owner-section" id="sec-orders">
-    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
-      <select id="orderStatusFilter" onchange="renderAllOrders()" style="padding:9px 14px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;outline:none;">
-        <option value="">All Statuses</option>
-        <option value="placed">Placed</option>
-        <option value="preparing">Preparing</option>
-        <option value="ready">Ready</option>
-        <option value="delivered">Delivered</option>
-        <option value="cancelled">Cancelled</option>
-      </select>
-    </div>
-    <div style="overflow-x:auto;">
-      <table class="data-table" id="allOrdersTable">
-        <thead><tr>
-          <th>Order ID</th><th>Table</th><th>Customer</th>
-          <th>Items</th><th>Total</th><th>Status</th><th>Time</th><th>Action</th>
-        </tr></thead>
-        <tbody id="allOrdersTbody"></tbody>
-      </table>
-    </div>
+    <div style="display:flex;gap:10px;margin-bottom:16px;"><select id="orderStatusFilter" onchange="applyOrderFilter()" style="padding:9px 14px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;outline:none;"><option value="">All Statuses</option><option value="placed">Placed</option><option value="preparing">Preparing</option><option value="ready">Ready</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></div>
+    <div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>Order ID</th><th>Table</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Time</th><th>Action</th></tr></thead><tbody id="allOrdersTbody"></tbody></table></div>
   </section>
-
-  <!-- ══ MENU MANAGEMENT ══ -->
   <section class="owner-section" id="sec-menu">
-    <div class="menu-actions">
-      <div class="menu-search">
-        <input type="text" id="menuSearchInput" placeholder="🔍 Search menu items…" oninput="renderMenuMgmt()"/>
-      </div>
-      <select id="menuCatFilter" onchange="renderMenuMgmt()" style="padding:9px 14px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;outline:none;">
-        <option value="">All Categories</option>
-        <option>Starters</option><option>Main Course</option>
-        <option>Biryani</option><option>Beverages</option><option>Desserts</option>
-      </select>
-      <button class="btn btn-primary" onclick="openAddItem()">+ Add Item</button>
-    </div>
+    <div class="menu-actions"><div class="menu-search"><input type="text" id="menuSearchInput" placeholder="🔍 Search menu items…" oninput="renderMenuMgmt()"/></div><select id="menuCatFilter" onchange="renderMenuMgmt()" style="padding:9px 14px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;outline:none;"><option value="">All Categories</option><option>Starters</option><option>Main Course</option><option>Biryani</option><option>Beverages</option><option>Desserts</option></select><button class="btn btn-primary" onclick="openAddItem()">+ Add Item</button></div>
     <div class="menu-card-grid" id="menuCardGrid"></div>
   </section>
-
-  <!-- ══ TABLES & QR ══ -->
   <section class="owner-section" id="sec-tables">
-    <div style="margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-      <p style="font-size:14px;color:var(--muted);flex:1;">
-        QR codes open the customer menu with the correct table number.
-        <strong>To scan from another phone</strong>, host this folder online or use Live Server on your local network.
-      </p>
-      <button class="btn btn-primary btn-sm" onclick="printAllQR()">🖨 Print All</button>
-    </div>
+    <div style="margin-bottom:16px;display:flex;gap:10px;align-items:center;"><p style="font-size:14px;color:var(--muted);flex:1;">QR codes open the customer menu with the correct table number.</p><button class="btn btn-primary btn-sm" onclick="printAllQR()">🖨 Print All</button></div>
     <div class="qr-grid" id="qrGrid"></div>
   </section>
-
-  <!-- ══ REPORTS ══ -->
   <section class="owner-section" id="sec-reports">
     <div class="stats-grid" id="reportStats"></div>
-
     <h3 style="font-size:16px;font-weight:700;margin:20px 0 12px;">Sales by Category</h3>
-    <div style="overflow-x:auto;">
-      <table class="data-table" id="catReportTable">
-        <thead><tr><th>Category</th><th>Orders</th><th>Items Sold</th><th>Revenue</th></tr></thead>
-        <tbody id="catReportTbody"></tbody>
-      </table>
-    </div>
-
+    <div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>Category</th><th>Orders</th><th>Items Sold</th><th>Revenue</th></tr></thead><tbody id="catReportTbody"></tbody></table></div>
     <h3 style="font-size:16px;font-weight:700;margin:20px 0 12px;">Top Selling Items</h3>
-    <div style="overflow-x:auto;">
-      <table class="data-table">
-        <thead><tr><th>Item</th><th>Category</th><th>Qty Sold</th><th>Revenue</th></tr></thead>
-        <tbody id="topItemsTbody"></tbody>
-      </table>
-    </div>
+    <div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>Item</th><th>Category</th><th>Qty Sold</th><th>Revenue</th></tr></thead><tbody id="topItemsTbody"></tbody></table></div>
   </section>
-
 </main>
-
-<!-- ══ ITEM MODAL ══ -->
 <div class="modal-overlay" id="itemModal">
   <div class="modal-box">
-    <div class="modal-header">
-      <h3 id="itemModalTitle">Add Item</h3>
-      <button class="modal-close" onclick="closeItemModal()">✕</button>
-    </div>
+    <div class="modal-header"><h3 id="itemModalTitle">Add Item</h3><button class="modal-close" onclick="closeItemModal()">✕</button></div>
     <form id="itemForm" onsubmit="saveItem(event)">
       <input type="hidden" id="editItemId"/>
-      <div class="form-group">
-        <label>Name *</label>
-        <input type="text" id="iName" placeholder="e.g. Paneer Tikka" required/>
-      </div>
-      <div class="form-group">
-        <label>Category *</label>
-        <select id="iCat" required>
-          <option value="">Select…</option>
-          <option>Starters</option><option>Main Course</option>
-          <option>Biryani</option><option>Beverages</option><option>Desserts</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Price (₹) *</label>
-        <input type="number" id="iPrice" min="1" placeholder="199" required/>
-      </div>
-      <div class="form-group">
-        <label>Description</label>
-        <textarea id="iDesc" rows="2" placeholder="Short description…"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Image URL</label>
-        <input type="text" id="iImg" placeholder="https://…"/>
-        <span style="font-size:12px;color:var(--muted)">Leave blank for default image</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-        <label class="toggle"><input type="checkbox" id="iEnabled" checked/><span class="toggle-slider"></span></label>
-        <span style="font-size:14px;font-weight:500;">Item Enabled</span>
-      </div>
-      <div style="display:flex;gap:10px;">
-        <button type="submit" class="btn btn-primary" style="flex:1;">Save Item</button>
-        <button type="button" class="btn btn-outline" onclick="closeItemModal()">Cancel</button>
-      </div>
+      <div class="form-group"><label>Name *</label><input type="text" id="iName" placeholder="e.g. Paneer Tikka" required/></div>
+      <div class="form-group"><label>Category *</label><select id="iCat" required><option value="">Select…</option><option>Starters</option><option>Main Course</option><option>Biryani</option><option>Beverages</option><option>Desserts</option></select></div>
+      <div class="form-group"><label>Price (₹) *</label><input type="number" id="iPrice" min="1" placeholder="199" required/></div>
+      <div class="form-group"><label>Description</label><textarea id="iDesc" rows="2" placeholder="Short description…"></textarea></div>
+      <div class="form-group"><label>Image URL</label><input type="text" id="iImg" placeholder="https://…"/></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;"><label class="toggle"><input type="checkbox" id="iEnabled" checked/><span class="toggle-slider"></span></label><span style="font-size:14px;font-weight:500;">Item Enabled</span></div>
+      <div style="display:flex;gap:10px;"><button type="submit" class="btn btn-primary" style="flex:1;">Save Item</button><button type="button" class="btn btn-outline" onclick="closeItemModal()">Cancel</button></div>
     </form>
   </div>
 </div>
-
-<!-- ── TOAST ── -->
 <div class="toast-container" id="toastContainer"></div>
-
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="data.js"></script>
 <script>
-RG.seed();
-RG.initChannel();
-
-// ── Clock ──
-setInterval(() => {
-  document.getElementById('ownerClock').textContent = new Date().toLocaleString('en-IN');
-}, 1000);
-
-// ── Sidebar ──
-function toggleSidebar() { document.getElementById('ownerSidebar').classList.toggle('open'); }
-
-// ── Sections ──
-function showSection(el) {
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  el.classList.add('active');
-  const name = el.dataset.section;
-  document.querySelectorAll('.owner-section').forEach(s => s.classList.remove('active'));
-  document.getElementById('sec-' + name).classList.add('active');
-  const titles = { dashboard:'📊 Dashboard', orders:'📋 Orders', menu:'🍽️ Menu Management', tables:'🪑 Tables & QR', reports:'📈 Reports' };
-  document.getElementById('ownerPageTitle').textContent = titles[name] || '';
-  refresh(name);
-  if (window.innerWidth < 900) document.getElementById('ownerSidebar').classList.remove('open');
-}
-
-function refresh(name) {
-  switch(name) {
-    case 'dashboard': renderDashboard(); break;
-    case 'orders':    renderAllOrders(); break;
-    case 'menu':      renderMenuMgmt(); break;
-    case 'tables':    renderTables(); break;
-    case 'reports':   renderReports(); break;
-  }
-}
-
-// ══ DASHBOARD ══
-function renderDashboard() {
-  const stats  = RG.todayStats();
-  const orders = RG.getOrders().slice(0, 10);
-
-  document.getElementById('statsGrid').innerHTML = `
-    <div class="stat-card"><div class="stat-icon orange">📋</div><div><div class="stat-val">${stats.count}</div><div class="stat-label">Today's Orders</div></div></div>
-    <div class="stat-card"><div class="stat-icon green">💰</div><div><div class="stat-val">${RG.fmt.price(stats.sales)}</div><div class="stat-label">Total Revenue</div></div></div>
-    <div class="stat-card"><div class="stat-icon blue">🪑</div><div><div class="stat-val">${stats.active}</div><div class="stat-label">Active Tables</div></div></div>
-    <div class="stat-card"><div class="stat-icon purple">📊</div><div><div class="stat-val">${RG.fmt.price(stats.avg)}</div><div class="stat-label">Avg Order Value</div></div></div>`;
-
-  document.getElementById('recentOrdersTbody').innerHTML = orders.length
-    ? orders.map(o => orderRow(o, false)).join('')
-    : `<tr><td colspan="7" class="center muted" style="padding:24px">No orders yet.</td></tr>`;
-}
-
-// ══ ORDERS ══
-function renderAllOrders() {
-  const filter = document.getElementById('orderStatusFilter').value;
-  let orders = RG.getOrders();
-  if (filter) orders = orders.filter(o => o.status === filter);
-
-  document.getElementById('allOrdersTbody').innerHTML = orders.length
-    ? orders.map(o => orderRow(o, true)).join('')
-    : `<tr><td colspan="8" class="center muted" style="padding:24px">No orders.</td></tr>`;
-}
-
-function orderRow(o, showAction) {
-  const badge = `<span class="badge" style="background:${RG.STATUS_COLORS[o.status]}22;color:${RG.STATUS_COLORS[o.status]}">${RG.STATUS_LABELS[o.status]||o.status}</span>`;
-  const action = showAction ? `<td><button class="btn btn-xs btn-outline" onclick="deleteOrder('${o.id}')">🗑</button></td>` : '';
-  return `<tr>
-    <td style="font-weight:700;color:var(--orange)">${o.id}</td>
-    <td>Table ${o.table}</td>
-    <td>${o.customer}</td>
-    <td style="max-width:200px">${o.items.map(i=>i.qty+'× '+i.name).join(', ')}</td>
-    <td style="font-weight:700">${RG.fmt.price(o.total)}</td>
-    <td>${badge}</td>
-    <td style="color:var(--muted)">${RG.fmt.time(o.createdAt)}</td>
-    ${action}
-  </tr>`;
-}
-
-function deleteOrder(id) {
-  if (!confirm('Delete order ' + id + '?')) return;
-  const orders = RG.getOrders().filter(o => o.id !== id);
-  RG.saveOrders(orders);
-  renderAllOrders();
-  toast('Order deleted.', 'error');
-}
-
-// ══ MENU MGMT ══
-function renderMenuMgmt() {
-  const q   = (document.getElementById('menuSearchInput').value || '').toLowerCase();
-  const cat = document.getElementById('menuCatFilter').value;
-  let menu  = RG.getMenu();
-  if (cat) menu = menu.filter(m => m.cat === cat);
-  if (q)   menu = menu.filter(m => m.name.toLowerCase().includes(q) || m.desc.toLowerCase().includes(q));
-
-  document.getElementById('menuCardGrid').innerHTML = menu.length ? menu.map(item => `
-    <div class="menu-mgmt-card ${item.enabled?'':'disabled-card'}">
-      <img src="${item.img}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'"/>
-      <div class="menu-mgmt-body">
-        <div class="menu-mgmt-name">${item.name}</div>
-        <div class="menu-mgmt-price">${RG.fmt.price(item.price)}</div>
-        <div class="menu-mgmt-cat">${item.cat}</div>
-        <div class="menu-mgmt-actions">
-          <button class="btn btn-xs btn-outline" onclick="openEditItem('${item.id}')">✏️ Edit</button>
-          <label class="toggle" title="${item.enabled?'Disable':'Enable'}">
-            <input type="checkbox" ${item.enabled?'checked':''} onchange="toggleItem('${item.id}',this.checked)"/>
-            <span class="toggle-slider"></span>
-          </label>
-          <button class="btn btn-xs btn-danger" onclick="deleteItem('${item.id}')">🗑</button>
-        </div>
-      </div>
-    </div>`).join('')
-    : `<div class="empty-state" style="grid-column:1/-1"><div class="es-icon">🍽️</div><h3>No items</h3></div>`;
-}
-
-// Item modal
-function openAddItem() {
-  document.getElementById('itemModalTitle').textContent = 'Add Item';
-  document.getElementById('itemForm').reset();
-  document.getElementById('editItemId').value = '';
-  document.getElementById('iEnabled').checked = true;
-  document.getElementById('itemModal').classList.add('open');
-}
-
-function openEditItem(id) {
-  const item = RG.getMenu().find(m => m.id === id);
-  if (!item) return;
-  document.getElementById('itemModalTitle').textContent = 'Edit Item';
-  document.getElementById('editItemId').value = id;
-  document.getElementById('iName').value    = item.name;
-  document.getElementById('iCat').value     = item.cat;
-  document.getElementById('iPrice').value   = item.price;
-  document.getElementById('iDesc').value    = item.desc;
-  document.getElementById('iImg').value     = item.img;
-  document.getElementById('iEnabled').checked = item.enabled;
-  document.getElementById('itemModal').classList.add('open');
-}
-
-function closeItemModal() { document.getElementById('itemModal').classList.remove('open'); }
-
-function saveItem(e) {
-  e.preventDefault();
-  const id      = document.getElementById('editItemId').value;
-  const menu    = RG.getMenu();
-  const newItem = {
-    id:      id || ('m' + Date.now()),
-    name:    document.getElementById('iName').value.trim(),
-    cat:     document.getElementById('iCat').value,
-    price:   Number(document.getElementById('iPrice').value),
-    desc:    document.getElementById('iDesc').value.trim(),
-    img:     document.getElementById('iImg').value.trim() || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400',
-    enabled: document.getElementById('iEnabled').checked,
-  };
-  if (id) {
-    const idx = menu.findIndex(m => m.id === id);
-    if (idx > -1) menu[idx] = newItem; else menu.push(newItem);
-  } else {
-    menu.push(newItem);
-  }
-  RG.saveMenu(menu);
-  closeItemModal();
-  renderMenuMgmt();
-  toast(id ? 'Item updated!' : 'Item added!', 'success');
-}
-
-function toggleItem(id, enabled) {
-  const menu = RG.getMenu();
-  const item = menu.find(m => m.id === id);
-  if (item) { item.enabled = enabled; RG.saveMenu(menu); renderMenuMgmt(); }
-}
-
-function deleteItem(id) {
-  if (!confirm('Delete this menu item?')) return;
-  RG.saveMenu(RG.getMenu().filter(m => m.id !== id));
-  renderMenuMgmt();
-  toast('Item deleted.', 'error');
-}
-
-// ══ TABLES & QR ══
-function renderTables() {
-  const tables  = RG.getTables();
-  const baseUrl = location.href.replace('owner.html', 'index.html');
-  const grid    = document.getElementById('qrGrid');
-
-  grid.innerHTML = tables.map(t => `
-    <div class="qr-card" id="qr-card-${t.id}">
-      <div class="qr-canvas-wrap" id="qr-wrap-${t.id}">
-        <canvas id="qr-${t.id}" class="qr-canvas-el"></canvas>
-      </div>
-      <div class="qr-brand-label">
-        <span class="qr-brand-icon">🍽</span>
-        <span class="qr-brand-name">RESTROGO</span>
-      </div>
-      <h4 class="qr-table-label">${t.label}</h4>
-      <div class="qr-btns">
-        <a href="${baseUrl}?table=${t.id}" target="_blank" class="btn btn-sm btn-outline">🔗 Open</a>
-        <button class="btn btn-sm btn-primary" onclick="downloadQR(${t.id},'${t.label}')">⬇ Download</button>
-        <button class="btn btn-sm btn-outline" onclick="printQR(${t.id},'${t.label}')">🖨 Print</button>
-      </div>
-    </div>`).join('');
-
-  // Draw each QR on canvas with logo overlay
-  tables.forEach(t => {
-    const url = baseUrl + '?table=' + t.id;
-    drawQRWithLogo(t.id, url, t.label);
-  });
-}
-
-/* ── Core: draw QR + RestroGo logo on canvas ── */
-function drawQRWithLogo(tableId, url, label) {
-  const canvas = document.getElementById('qr-' + tableId);
-  if (!canvas) return;
-
-  const SIZE      = 220;   // canvas pixels
-  const LOGO_AREA = 52;    // logo box size (≈24% of SIZE — safe with H correction)
-  const RADIUS    = 10;    // logo box corner radius
-  canvas.width  = SIZE;
-  canvas.height = SIZE;
-  const ctx = canvas.getContext('2d');
-
-  /* ── Try qrcode-generator (preferred, gives canvas control) ── */
-  if (typeof qrcode !== 'undefined') {
-    try {
-      const qr = qrcode(0, 'H');   // type auto, error correction H
-      qr.addData(url);
-      qr.make();
-
-      const mods    = qr.getModuleCount();
-      const modSize = SIZE / mods;
-
-      // White background
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, SIZE, SIZE);
-
-      // QR modules — dark navy
-      ctx.fillStyle = '#07131F';
-      for (let row = 0; row < mods; row++) {
-        for (let col = 0; col < mods; col++) {
-          if (qr.isDark(row, col)) {
-            ctx.fillRect(
-              Math.floor(col * modSize),
-              Math.floor(row * modSize),
-              Math.ceil(modSize),
-              Math.ceil(modSize)
-            );
-          }
-        }
-      }
-      overlayLogo(ctx, SIZE, LOGO_AREA, RADIUS, label);
-      return;
-    } catch(e) { /* fall through */ }
-  }
-
-  /* ── Fallback: use qrcodejs img then redraw on canvas ── */
-  if (window.QRCode) {
-    const tmp = document.createElement('div');
-    tmp.style.display = 'none';
-    document.body.appendChild(tmp);
-    try {
-      new QRCode(tmp, {
-        text: url, width: SIZE, height: SIZE,
-        colorDark: '#07131F', colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.H
-      });
-      const img = tmp.querySelector('img') || tmp.querySelector('canvas');
-      const draw = () => {
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, SIZE, SIZE);
-        ctx.drawImage(img, 0, 0, SIZE, SIZE);
-        overlayLogo(ctx, SIZE, LOGO_AREA, RADIUS, label);
-        document.body.removeChild(tmp);
-      };
-      if (img.tagName === 'IMG') {
-        if (img.complete) draw(); else img.onload = draw;
-      } else { draw(); }
-    } catch(e) {
-      document.body.removeChild(tmp);
-      fallbackQRText(canvas, url);
-    }
-    return;
-  }
-
-  /* ── Last resort: text URL ── */
-  fallbackQRText(canvas, url);
-}
-
-/* ── Draw RestroGo logo in center of QR ── */
-function overlayLogo(ctx, size, logoArea, radius, label) {
-  const cx = size / 2;
-  const cy = size / 2;
-  const x  = cx - logoArea / 2;
-  const y  = cy - logoArea / 2;
-
-  // White rounded square with shadow
-  ctx.save();
-  ctx.shadowColor = 'rgba(0,0,0,0.18)';
-  ctx.shadowBlur  = 6;
-  roundRect(ctx, x - 3, y - 3, logoArea + 6, logoArea + 6, radius + 2);
-  ctx.fillStyle = '#ffffff';
-  ctx.fill();
-  ctx.restore();
-
-  // Orange filled rounded square (logo background)
-  ctx.save();
-  roundRect(ctx, x, y, logoArea, logoArea, radius);
-  ctx.fillStyle = '#FFB21A';
-  ctx.fill();
-  ctx.restore();
-
-  // Fork & knife SVG path drawn on canvas
-  ctx.save();
-  ctx.translate(cx, cy);
-  const s = logoArea * 0.52;
-  ctx.scale(s / 24, s / 24);
-  ctx.translate(-12, -13);  // center the 24x24 icon
-
-  ctx.fillStyle = '#07131F';
-
-  // Fork (left tine group)
-  ctx.beginPath();
-  ctx.moveTo(6.5, 2); ctx.lineTo(6.5, 7);
-  ctx.arc(6.5, 7, 1.5, 0, Math.PI, false);
-  ctx.lineTo(5, 2); ctx.closePath();
-  ctx.fill();
-
-  // Fork handle
-  ctx.fillRect(5.8, 8.5, 1.4, 13.5);
-
-  // Knife (right)
-  ctx.beginPath();
-  ctx.moveTo(17.5, 2);
-  ctx.bezierCurveTo(17.5, 2, 19.5, 5, 19.5, 9);
-  ctx.bezierCurveTo(19.5, 11, 18.5, 12, 17.5, 12.5);
-  ctx.lineTo(17.5, 22);
-  ctx.lineTo(16.2, 22);
-  ctx.lineTo(16.2, 2);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.restore();
-
-  // "RG" text below icon
-  ctx.save();
-  ctx.font = `bold ${logoArea * 0.22}px Arial`;
-  ctx.fillStyle = '#07131F';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('RG', cx, cy + logoArea * 0.28);
-  ctx.restore();
-}
-
-/* ── Canvas rounded rect helper ── */
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  ctx.lineTo(x + r, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-  ctx.lineTo(x, y + r);
-  ctx.quadraticCurveTo(x, y, x + r, y);
-  ctx.closePath();
-}
-
-/* ── Fallback when no QR lib loads ── */
-function fallbackQRText(canvas, url) {
-  const ctx = canvas.getContext('2d');
-  canvas.width = 220; canvas.height = 220;
-  ctx.fillStyle = '#f4f6f8';
-  ctx.fillRect(0, 0, 220, 220);
-  ctx.fillStyle = '#667085';
-  ctx.font = '12px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('QR library not loaded.', 110, 90);
-  ctx.fillStyle = '#FFB21A';
-  ctx.font = 'bold 11px Arial';
-  ctx.fillText('Check internet & reload.', 110, 115);
-  ctx.fillStyle = '#07131F';
-  ctx.font = '10px Arial';
-  const words = url.split('');
-  ctx.fillText(url.slice(0, 35), 110, 145);
-  if (url.length > 35) ctx.fillText(url.slice(35), 110, 160);
-}
-
-/* ── Download QR as PNG ── */
-function downloadQR(tableId, label) {
-  const canvas = document.getElementById('qr-' + tableId);
-  if (!canvas) return;
-
-  // Create a bigger export canvas with border + branding
-  const exp    = document.createElement('canvas');
-  const PAD    = 28;
-  const BOTTOM = 64;
-  exp.width  = canvas.width  + PAD * 2;
-  exp.height = canvas.height + PAD * 2 + BOTTOM;
-  const ctx = exp.getContext('2d');
-
-  // Background
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, exp.width, exp.height);
-
-  // Navy border
-  ctx.strokeStyle = '#07131F';
-  ctx.lineWidth   = 3;
-  roundRect(ctx, 2, 2, exp.width - 4, exp.height - 4, 14);
-  ctx.stroke();
-
-  // QR
-  ctx.drawImage(canvas, PAD, PAD);
-
-  // Brand label
-  ctx.fillStyle = '#07131F';
-  ctx.font      = 'bold 15px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('🍽  RESTROGO', exp.width / 2, canvas.height + PAD + 22);
-
-  ctx.fillStyle = '#FFB21A';
-  ctx.font      = 'bold 18px Arial';
-  ctx.fillText(label.toUpperCase(), exp.width / 2, canvas.height + PAD + 46);
-
-  const a  = document.createElement('a');
-  a.href   = exp.toDataURL('image/png');
-  a.download = `restrogo-qr-${label.replace(/\s+/g, '-').toLowerCase()}.png`;
-  a.click();
-  toast('QR downloaded! ⬇', 'success');
-}
-
-/* ── Print single QR ── */
-function printQR(tableId, label) {
-  const canvas = document.getElementById('qr-' + tableId);
-  if (!canvas) return;
-  const dataUrl = canvas.toDataURL('image/png');
-  const url     = location.href.replace('owner.html', 'index.html') + '?table=' + tableId;
-  const w = window.open('', '_blank');
-  w.document.write(`<!DOCTYPE html><html><head><title>RestroGo — ${label}</title>
-  <style>
-    @media print { body { margin:0; } }
-    body { font-family:Arial,sans-serif; text-align:center; padding:32px; background:#fff; }
-    .print-card { display:inline-block; border:3px solid #07131F; border-radius:16px; padding:24px 28px; }
-    .brand { font-size:22px; font-weight:900; color:#07131F; margin-bottom:4px; }
-    .brand span { color:#FFB21A; }
-    .table-name { font-size:20px; font-weight:800; color:#FFB21A; margin:10px 0 6px; text-transform:uppercase; }
-    .scan-hint { font-size:13px; color:#667085; margin-bottom:14px; }
-    img { width:220px; height:220px; display:block; margin:0 auto 12px; }
-    .url { font-size:10px; color:#667085; word-break:break-all; max-width:220px; margin:0 auto; }
-  </style></head><body>
-  <div class="print-card">
-    <div class="brand">🍽 Restro<span>Go</span></div>
-    <div class="scan-hint">Scan to view menu & order</div>
-    <img src="${dataUrl}" alt="QR Code"/>
-    <div class="table-name">${label}</div>
-    <div class="url">${url}</div>
-  </div>
-  <script>window.onload=function(){window.print();window.close();}<\/script>
-  </body></html>`);
-  w.document.close();
-}
-
-function printAllQR() { window.print(); }
-
-// ══ REPORTS ══
-function renderReports() {
-  const orders  = RG.getOrders();
-  const menu    = RG.getMenu();
-  const stats   = RG.todayStats();
-  const total   = orders.reduce((s,o)=>s+o.total,0);
-  const revenue = orders.filter(o=>o.status==='delivered').reduce((s,o)=>s+o.total,0);
-
-  document.getElementById('reportStats').innerHTML = `
-    <div class="stat-card"><div class="stat-icon orange">📋</div><div><div class="stat-val">${orders.length}</div><div class="stat-label">Total Orders</div></div></div>
-    <div class="stat-card"><div class="stat-icon green">💰</div><div><div class="stat-val">${RG.fmt.price(revenue)}</div><div class="stat-label">Delivered Revenue</div></div></div>
-    <div class="stat-card"><div class="stat-icon blue">📦</div><div><div class="stat-val">${orders.reduce((s,o)=>s+o.items.reduce((x,i)=>x+i.qty,0),0)}</div><div class="stat-label">Items Sold</div></div></div>
-    <div class="stat-card"><div class="stat-icon purple">📊</div><div><div class="stat-val">${orders.length?RG.fmt.price(Math.round(total/orders.length)):'₹0'}</div><div class="stat-label">Avg Order Value</div></div></div>`;
-
-  // Category breakdown
-  const cats = {};
-  orders.forEach(o => o.items.forEach(i => {
-    const m = menu.find(x=>x.id===i.id);
-    const cat = m?.cat || 'Unknown';
-    if (!cats[cat]) cats[cat] = { orders:new Set(), qty:0, rev:0 };
-    cats[cat].orders.add(o.id);
-    cats[cat].qty += i.qty;
-    cats[cat].rev += i.price * i.qty;
-  }));
-
-  document.getElementById('catReportTbody').innerHTML = Object.entries(cats).length
-    ? Object.entries(cats).sort((a,b)=>b[1].rev-a[1].rev).map(([cat,d])=>
-        `<tr><td>${cat}</td><td>${d.orders.size}</td><td>${d.qty}</td><td style="font-weight:700">${RG.fmt.price(d.rev)}</td></tr>`
-      ).join('')
-    : `<tr><td colspan="4" class="center muted" style="padding:20px">No data yet.</td></tr>`;
-
-  // Top items
-  const items = {};
-  orders.forEach(o => o.items.forEach(i => {
-    if (!items[i.name]) items[i.name] = { cat:'', qty:0, rev:0 };
-    const m = menu.find(x=>x.id===i.id);
-    items[i.name].cat = m?.cat || '—';
-    items[i.name].qty += i.qty;
-    items[i.name].rev += i.price * i.qty;
-  }));
-
-  document.getElementById('topItemsTbody').innerHTML = Object.entries(items).length
-    ? Object.entries(items).sort((a,b)=>b[1].qty-a[1].qty).slice(0,10).map(([name,d])=>
-        `<tr><td style="font-weight:600">${name}</td><td style="color:var(--muted)">${d.cat}</td><td>${d.qty}</td><td style="font-weight:700">${RG.fmt.price(d.rev)}</td></tr>`
-      ).join('')
-    : `<tr><td colspan="4" class="center muted" style="padding:20px">No data yet.</td></tr>`;
-}
-
-// ── Cross-tab ──
-if (RG.ch) {
-  RG.ch.onmessage = e => {
-    if (['ORDERS_UPDATED','MENU_UPDATED','RESET'].includes(e.data.type)) {
-      const active = document.querySelector('.owner-section.active');
-      if (active) refresh(active.id.replace('sec-',''));
-    }
-  };
-}
-window.addEventListener('storage', () => {
-  const active = document.querySelector('.owner-section.active');
-  if (active) refresh(active.id.replace('sec-',''));
-});
-
-// ── Reset ──
-function confirmReset() {
-  if (confirm('⚠️ This will delete ALL orders and reset the menu to defaults. Are you sure?')) {
-    RG.resetAll();
-    renderDashboard();
-    toast('Demo data reset!', 'success');
-  }
-}
-
-// ── Toast ──
-function toast(msg, type='') {
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.textContent = msg;
-  document.getElementById('toastContainer').appendChild(el);
-  setTimeout(() => el.remove(), 3500);
-}
-
-// ── Close modal on overlay click ──
-document.getElementById('itemModal').addEventListener('click', function(e) {
-  if (e.target === this) closeItemModal();
-});
-
-// ── Init ──
-renderDashboard();
-setInterval(() => {
-  const active = document.querySelector('.owner-section.active');
-  if (active) refresh(active.id.replace('sec-',''));
-}, 15000);
+let allOrders=[],allMenu=[];
+setInterval(()=>{document.getElementById('ownerClock').textContent=new Date().toLocaleString('en-IN');},1000);
+function toggleSidebar(){document.getElementById('ownerSidebar').classList.toggle('open');}
+function showSection(el){document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));el.classList.add('active');const name=el.dataset.section;document.querySelectorAll('.owner-section').forEach(s=>s.classList.remove('active'));document.getElementById('sec-'+name).classList.add('active');const titles={dashboard:'📊 Dashboard',orders:'📋 Orders',menu:'🍽️ Menu Management',tables:'🪑 Tables & QR',reports:'📈 Reports'};document.getElementById('ownerPageTitle').textContent=titles[name]||'';if(window.innerWidth<900)document.getElementById('ownerSidebar').classList.remove('open');if(name==='tables')renderTables();if(name==='reports')renderReports();}
+RG.onOrders(orders=>{allOrders=orders;const s=document.querySelector('.owner-section.active')?.id?.replace('sec-','');if(s==='dashboard')renderDashboard();if(s==='orders')renderAllOrders();if(s==='reports')renderReports();});
+RG.onMenu(menu=>{allMenu=menu;const s=document.querySelector('.owner-section.active')?.id?.replace('sec-','');if(s==='menu')renderMenuMgmt();});
+RG.seed().then(()=>{renderDashboard();});
+function renderDashboard(){const today=new Date().toDateString();const todays=allOrders.filter(o=>new Date(o.createdAt).toDateString()===today);const sales=todays.filter(o=>o.status==='delivered').reduce((s,o)=>s+o.total,0);const active=[...new Set(todays.filter(o=>!['delivered','cancelled'].includes(o.status)).map(o=>o.table))].length;const avg=todays.length?Math.round(todays.reduce((s,o)=>s+o.total,0)/todays.length):0;document.getElementById('statsGrid').innerHTML=`<div class="stat-card"><div class="stat-icon orange">📋</div><div><div class="stat-val">${todays.length}</div><div class="stat-label">Today's Orders</div></div></div><div class="stat-card"><div class="stat-icon green">💰</div><div><div class="stat-val">${RG.fmt.price(sales)}</div><div class="stat-label">Total Revenue</div></div></div><div class="stat-card"><div class="stat-icon blue">🪑</div><div><div class="stat-val">${active}</div><div class="stat-label">Active Tables</div></div></div><div class="stat-card"><div class="stat-icon purple">📊</div><div><div class="stat-val">${RG.fmt.price(avg)}</div><div class="stat-label">Avg Order Value</div></div></div>`;document.getElementById('recentOrdersTbody').innerHTML=allOrders.slice(0,10).length?allOrders.slice(0,10).map(o=>orderRow(o,false)).join(''):`<tr><td colspan="7" class="center muted" style="padding:24px">No orders yet.</td></tr>`;}
+function applyOrderFilter(){renderAllOrders();}
+function renderAllOrders(){const filter=document.getElementById('orderStatusFilter').value;let orders=allOrders;if(filter)orders=orders.filter(o=>o.status===filter);document.getElementById('allOrdersTbody').innerHTML=orders.length?orders.map(o=>orderRow(o,true)).join(''):`<tr><td colspan="8" class="center muted" style="padding:24px">No orders.</td></tr>`;}
+function orderRow(o,showAction){const badge=`<span class="badge" style="background:${RG.STATUS_COLORS[o.status]}22;color:${RG.STATUS_COLORS[o.status]}">${RG.STATUS_LABELS[o.status]||o.status}</span>`;const action=showAction?`<td><button class="btn btn-xs btn-outline" onclick="deleteOrder('${o.id}')">🗑</button></td>`:'';return`<tr><td style="font-weight:700;color:var(--orange)">${o.id}</td><td>Table ${o.table}</td><td>${o.customer}</td><td style="max-width:200px">${o.items.map(i=>i.qty+'× '+i.name).join(', ')}</td><td style="font-weight:700">${RG.fmt.price(o.total)}</td><td>${badge}</td><td style="color:var(--muted)">${RG.fmt.time(o.createdAt)}</td>${action}</tr>`;}
+async function deleteOrder(id){if(!confirm('Delete order '+id+'?'))return;await RG.deleteOrder(id);toast('Order deleted.','error');}
+function renderMenuMgmt(){const q=(document.getElementById('menuSearchInput').value||'').toLowerCase();const cat=document.getElementById('menuCatFilter').value;let menu=allMenu;if(cat)menu=menu.filter(m=>m.cat===cat);if(q)menu=menu.filter(m=>m.name.toLowerCase().includes(q)||(m.desc||'').toLowerCase().includes(q));document.getElementById('menuCardGrid').innerHTML=menu.length?menu.map(item=>`<div class="menu-mgmt-card ${item.enabled?'':'disabled-card'}"><img src="${item.img}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'"/><div class="menu-mgmt-body"><div class="menu-mgmt-name">${item.name}</div><div class="menu-mgmt-price">${RG.fmt.price(item.price)}</div><div class="menu-mgmt-cat">${item.cat}</div><div class="menu-mgmt-actions"><button class="btn btn-xs btn-outline" onclick="openEditItem('${item.id}')">✏️ Edit</button><label class="toggle"><input type="checkbox" ${item.enabled?'checked':''} onchange="toggleItem('${item.id}',this.checked)"/><span class="toggle-slider"></span></label><button class="btn btn-xs btn-danger" onclick="deleteItem('${item.id}')">🗑</button></div></div></div>`).join(''):`<div class="empty-state" style="grid-column:1/-1"><div class="es-icon">🍽️</div><h3>No items</h3></div>`;}
+function openAddItem(){document.getElementById('itemModalTitle').textContent='Add Item';document.getElementById('itemForm').reset();document.getElementById('editItemId').value='';document.getElementById('iEnabled').checked=true;document.getElementById('itemModal').classList.add('open');}
+function openEditItem(id){const item=allMenu.find(m=>m.id===id);if(!item)return;document.getElementById('itemModalTitle').textContent='Edit Item';document.getElementById('editItemId').value=id;document.getElementById('iName').value=item.name;document.getElementById('iCat').value=item.cat;document.getElementById('iPrice').value=item.price;document.getElementById('iDesc').value=item.desc||'';document.getElementById('iImg').value=item.img||'';document.getElementById('iEnabled').checked=item.enabled;document.getElementById('itemModal').classList.add('open');}
+function closeItemModal(){document.getElementById('itemModal').classList.remove('open');}
+async function saveItem(e){e.preventDefault();const id=document.getElementById('editItemId').value;const newItem={id:id||('m'+Date.now()),name:document.getElementById('iName').value.trim(),cat:document.getElementById('iCat').value,price:Number(document.getElementById('iPrice').value),desc:document.getElementById('iDesc').value.trim(),img:document.getElementById('iImg').value.trim()||'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400',enabled:document.getElementById('iEnabled').checked};await RG.saveMenuItem(newItem);closeItemModal();toast(id?'Item updated!':'Item added!','success');}
+async function toggleItem(id,enabled){await RG.saveMenuItem({...allMenu.find(m=>m.id===id),enabled});}
+async function deleteItem(id){if(!confirm('Delete this menu item?'))return;await RG.deleteMenuItem(id);toast('Item deleted.','error');}
+async function renderTables(){const tables=await RG.getTables();const baseUrl=location.href.replace('owner.html','index.html');const grid=document.getElementById('qrGrid');grid.innerHTML=tables.map(t=>`<div class="qr-card" id="qr-card-${t.id}"><div class="qr-canvas-wrap"><canvas id="qr-${t.id}" class="qr-canvas-el"></canvas></div><div class="qr-brand-label"><span class="qr-brand-icon">🍽</span><span class="qr-brand-name">RESTROGO</span></div><h4 class="qr-table-label">${t.label}</h4><div class="qr-btns"><a href="${baseUrl}?table=${t.id}" target="_blank" class="btn btn-sm btn-outline">🔗 Open</a><button class="btn btn-sm btn-primary" onclick="downloadQR(${t.id},'${t.label}')">⬇ Download</button><button class="btn btn-sm btn-outline" onclick="printQR(${t.id},'${t.label}')">🖨 Print</button></div></div>`).join('');tables.forEach(t=>{drawQRWithLogo(t.id,baseUrl+'?table='+t.id,t.label);});}
+function drawQRWithLogo(tableId,url,label){const canvas=document.getElementById('qr-'+tableId);if(!canvas)return;const SIZE=220,LOGO_AREA=52,RADIUS=10;canvas.width=SIZE;canvas.height=SIZE;const ctx=canvas.getContext('2d');if(typeof qrcode!=='undefined'){try{const qr=qrcode(0,'H');qr.addData(url);qr.make();const mods=qr.getModuleCount(),modSize=SIZE/mods;ctx.fillStyle='#ffffff';ctx.fillRect(0,0,SIZE,SIZE);ctx.fillStyle='#07131F';for(let r=0;r<mods;r++)for(let c=0;c<mods;c++)if(qr.isDark(r,c))ctx.fillRect(Math.floor(c*modSize),Math.floor(r*modSize),Math.ceil(modSize),Math.ceil(modSize));overlayLogo(ctx,SIZE,LOGO_AREA,RADIUS,label);return;}catch(e){}}ctx.fillStyle='#f4f6f8';ctx.fillRect(0,0,SIZE,SIZE);ctx.fillStyle='#667085';ctx.font='12px Arial';ctx.textAlign='center';ctx.fillText('QR not loaded',SIZE/2,SIZE/2);}
+function overlayLogo(ctx,size,logoArea,radius,label){const cx=size/2,cy=size/2,x=cx-logoArea/2,y=cy-logoArea/2;ctx.save();ctx.shadowColor='rgba(0,0,0,0.18)';ctx.shadowBlur=6;roundRect(ctx,x-3,y-3,logoArea+6,logoArea+6,radius+2);ctx.fillStyle='#ffffff';ctx.fill();ctx.restore();ctx.save();roundRect(ctx,x,y,logoArea,logoArea,radius);ctx.fillStyle='#FFB21A';ctx.fill();ctx.restore();ctx.save();ctx.translate(cx,cy);const s=logoArea*0.52;ctx.scale(s/24,s/24);ctx.translate(-12,-13);ctx.fillStyle='#07131F';ctx.beginPath();ctx.moveTo(6.5,2);ctx.lineTo(6.5,7);ctx.arc(6.5,7,1.5,0,Math.PI,false);ctx.lineTo(5,2);ctx.closePath();ctx.fill();ctx.fillRect(5.8,8.5,1.4,13.5);ctx.beginPath();ctx.moveTo(17.5,2);ctx.bezierCurveTo(17.5,2,19.5,5,19.5,9);ctx.bezierCurveTo(19.5,11,18.5,12,17.5,12.5);ctx.lineTo(17.5,22);ctx.lineTo(16.2,22);ctx.lineTo(16.2,2);ctx.closePath();ctx.fill();ctx.restore();ctx.save();ctx.font=`bold ${logoArea*0.22}px Arial`;ctx.fillStyle='#07131F';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('RG',cx,cy+logoArea*0.28);ctx.restore();}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
+function downloadQR(tableId,label){const canvas=document.getElementById('qr-'+tableId);if(!canvas)return;const exp=document.createElement('canvas'),PAD=28,BOTTOM=64;exp.width=canvas.width+PAD*2;exp.height=canvas.height+PAD*2+BOTTOM;const ctx=exp.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,exp.width,exp.height);ctx.strokeStyle='#07131F';ctx.lineWidth=3;roundRect(ctx,2,2,exp.width-4,exp.height-4,14);ctx.stroke();ctx.drawImage(canvas,PAD,PAD);ctx.fillStyle='#07131F';ctx.font='bold 15px Arial';ctx.textAlign='center';ctx.fillText('🍽  RESTROGO',exp.width/2,canvas.height+PAD+22);ctx.fillStyle='#FFB21A';ctx.font='bold 18px Arial';ctx.fillText(label.toUpperCase(),exp.width/2,canvas.height+PAD+46);const a=document.createElement('a');a.href=exp.toDataURL('image/png');a.download=`restrogo-qr-${label.replace(/\s+/g,'-').toLowerCase()}.png`;a.click();toast('QR downloaded! ⬇','success');}
+function printQR(tableId,label){const canvas=document.getElementById('qr-'+tableId);if(!canvas)return;const dataUrl=canvas.toDataURL('image/png');const url=location.href.replace('owner.html','index.html')+'?table='+tableId;const w=window.open('','_blank');w.document.write(`<!DOCTYPE html><html><head><title>RestroGo — ${label}</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:32px;} .print-card{display:inline-block;border:3px solid #07131F;border-radius:16px;padding:24px;} img{width:220px;height:220px;display:block;margin:0 auto 12px;}</style></head><body><div class="print-card"><img src="${dataUrl}"/><div style="font-size:20px;font-weight:800;color:#FFB21A;">${label}</div></div><script>window.onload=function(){window.print();window.close();}<\/script></body></html>`);w.document.close();}
+function printAllQR(){window.print();}
+function renderReports(){const orders=allOrders;const menu=allMenu;const total=orders.reduce((s,o)=>s+o.total,0);const revenue=orders.filter(o=>o.status==='delivered').reduce((s,o)=>s+o.total,0);document.getElementById('reportStats').innerHTML=`<div class="stat-card"><div class="stat-icon orange">📋</div><div><div class="stat-val">${orders.length}</div><div class="stat-label">Total Orders</div></div></div><div class="stat-card"><div class="stat-icon green">💰</div><div><div class="stat-val">${RG.fmt.price(revenue)}</div><div class="stat-label">Delivered Revenue</div></div></div><div class="stat-card"><div class="stat-icon blue">📦</div><div><div class="stat-val">${orders.reduce((s,o)=>s+o.items.reduce((x,i)=>x+i.qty,0),0)}</div><div class="stat-label">Items Sold</div></div></div><div class="stat-card"><div class="stat-icon purple">📊</div><div><div class="stat-val">${orders.length?RG.fmt.price(Math.round(total/orders.length)):'₹0'}</div><div class="stat-label">Avg Order Value</div></div></div>`;const cats={};orders.forEach(o=>o.items.forEach(i=>{const m=menu.find(x=>x.id===i.id);const cat=m?.cat||'Unknown';if(!cats[cat])cats[cat]={orders:new Set(),qty:0,rev:0};cats[cat].orders.add(o.id);cats[cat].qty+=i.qty;cats[cat].rev+=i.price*i.qty;}));document.getElementById('catReportTbody').innerHTML=Object.entries(cats).length?Object.entries(cats).sort((a,b)=>b[1].rev-a[1].rev).map(([cat,d])=>`<tr><td>${cat}</td><td>${d.orders.size}</td><td>${d.qty}</td><td style="font-weight:700">${RG.fmt.price(d.rev)}</td></tr>`).join(''):`<tr><td colspan="4" class="center muted" style="padding:20px">No data yet.</td></tr>`;const items={};orders.forEach(o=>o.items.forEach(i=>{if(!items[i.name])items[i.name]={cat:'',qty:0,rev:0};const m=menu.find(x=>x.id===i.id);items[i.name].cat=m?.cat||'—';items[i.name].qty+=i.qty;items[i.name].rev+=i.price*i.qty;}));document.getElementById('topItemsTbody').innerHTML=Object.entries(items).length?Object.entries(items).sort((a,b)=>b[1].qty-a[1].qty).slice(0,10).map(([name,d])=>`<tr><td style="font-weight:600">${name}</td><td style="color:var(--muted)">${d.cat}</td><td>${d.qty}</td><td style="font-weight:700">${RG.fmt.price(d.rev)}</td></tr>`).join(''):`<tr><td colspan="4" class="center muted" style="padding:20px">No data yet.</td></tr>`;}
+async function confirmReset(){if(confirm('⚠️ Delete ALL orders and reset menu?')){await RG.resetAll();toast('Demo data reset!','success');}}
+function toast(msg,type=''){const el=document.createElement('div');el.className=`toast ${type}`;el.textContent=msg;document.getElementById('toastContainer').appendChild(el);setTimeout(()=>el.remove(),3500);}
+document.getElementById('itemModal').addEventListener('click',function(e){if(e.target===this)closeItemModal();});
 </script>
 </body>
 </html>
